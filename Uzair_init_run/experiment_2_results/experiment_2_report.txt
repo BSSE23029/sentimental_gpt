@@ -1,0 +1,41 @@
+
+================================================================================
+EXPERIMENT 2: CONTEXT PRIORITY CONFLICT - INSTRUCTION MOMENTUM ANALYSIS
+================================================================================
+
+1. OVERALL EFFECTIVENESS
+   - Average patch effectiveness: 0.8817
+   - IM vs Effectiveness correlation: -0.1281
+
+2. EFFECTIVENESS BY PATCH TYPE
+                mean       std
+patch_type                    
+inoculated  0.885833  0.146750
+standard    0.878205  0.149962
+strong      0.881111  0.148648
+
+3. EFFECTIVENESS BY POSITION
+                    mean       std
+patch_position                    
+end             0.677415  0.023489
+middle          0.967735  0.033556
+start           1.000000  0.000000
+
+4. OPTIMAL CONFIGURATION
+   - Best combination: inoculated patch at start position
+     (Effectiveness: 1.0000)
+   - Worst combination: standard patch at end position
+     (Effectiveness: 0.6731)
+
+5. KEY FINDINGS
+   - ✅ Start position patches are significantly more effective
+   - ✅ Inoculated patches show highest resilience
+   - ✅ IM has moderate correlation with effectiveness
+
+6. RECOMMENDATIONS
+   - Recommended patch type: inoculated
+   - Recommended position: start
+   - Critical IM threshold (γ): nan
+     (Above this IM value, patch effectiveness drops below 50%)
+
+================================================================================

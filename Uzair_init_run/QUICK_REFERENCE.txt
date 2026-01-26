@@ -1,0 +1,213 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║                   SHPDE GAP ANALYSIS QUICK REFERENCE                     ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 🚀 QUICK START                                                           │
+└──────────────────────────────────────────────────────────────────────────┘
+
+  1. Install dependencies:
+     $ pip install pandas numpy torch transformers matplotlib seaborn tqdm
+
+  2. Run all experiments:
+     $ python run_gap_analysis.py --all
+
+  3. Review results:
+     $ cat SHPDE_Gap_Analysis_Consolidated_Report.txt
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 📊 EXPERIMENTS AT A GLANCE                                               │
+└──────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────┬──────────────────────┬─────────────────────────────────┐
+│ Experiment      │ Key Question         │ Primary Output                  │
+├─────────────────┼──────────────────────┼─────────────────────────────────┤
+│ 1. Threshold    │ Where's the dead     │ Optimal τ* = ?                  │
+│    Sensitivity  │ zone?                │ Dead zone: [?, ?]               │
+├─────────────────┼──────────────────────┼─────────────────────────────────┤
+│ 2. Instruction  │ Can users override   │ Best patch: start + inoculated  │
+│    Momentum     │ patches?             │ Critical IM: γ = ?              │
+├─────────────────┼──────────────────────┼─────────────────────────────────┤
+│ 3. Semantic     │ Do polite attacks    │ CNN miss rate: ?%               │
+│    Drift        │ bypass CNN?          │ SDS threshold: ?                │
+├─────────────────┼──────────────────────┼─────────────────────────────────┤
+│ 4. Patch        │ What cancels         │ PRS by patch type               │
+│    Inefficacy   │ defenses?            │ Most dangerous mechanism        │
+└─────────────────┴──────────────────────┴─────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 🎯 KEY METRICS CHEAT SHEET                                               │
+└──────────────────────────────────────────────────────────────────────────┘
+
+  Experiment 1:
+    τ* (optimal threshold)    = argmax[TPR - FPR]
+    RUR (refusal ratio)       = FPR (should be < 0.30)
+    J-Statistic              = TPR - FPR (target: > 0.75)
+
+  Experiment 2:
+    IM (instruction momentum) = Σα_malicious / Σα_patch
+    Critical IM threshold     = where patch fails 50% of time
+    Position bias            = effectiveness(start) vs effectiveness(end)
+
+  Experiment 3:
+    SDS (semantic drift)      = Intent / ||CNN_energy||
+    High-risk threshold       = SDS > 3.0
+    CNN miss rate            = 1 - detection_rate(low_energy_attacks)
+
+  Experiment 4:
+    CSR (cancel success)      = patch_cancelled / total_tests
+    PRS (patch resilience)    = 1 - CSR (target: > 0.70)
+    PCS (cancel score)        = Σ cancel_tokens × similarity(token, patch)
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ ⚡ COMMAND SHORTCUTS                                                     │
+└──────────────────────────────────────────────────────────────────────────┘
+
+  Run all:              python run_gap_analysis.py --all
+  Run single:           python run_gap_analysis.py --exp 1
+  
+  Individual runs:
+    Exp 1:              python experiment_1_threshold_sweep.py
+    Exp 2:              python experiment_2_instruction_momentum.py
+    Exp 3:              python experiment_3_semantic_drift.py
+    Exp 4:              python experiment_4_patch_inefficacy.py
+  
+  Generate config:      python shpde_config.py
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 🚨 CRITICAL THRESHOLDS                                                   │
+└──────────────────────────────────────────────────────────────────────────┘
+
+  ✅ PASS                              ⚠️  REVIEW                🚨 FAIL
+  ────────────────────────────────────────────────────────────────────────
+  J-Statistic > 0.75                   0.60 - 0.75               < 0.60
+  RUR < 0.20                           0.20 - 0.30               > 0.30
+  TPR > 0.90                           0.85 - 0.90               < 0.85
+  PRS > 0.80                           0.70 - 0.80               < 0.70
+  CNN Miss Rate < 0.30                 0.30 - 0.50               > 0.50
+  CSR < 0.30                           0.30 - 0.50               > 0.50
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 🛠️  CONFIGURATION PRESETS                                                │
+└──────────────────────────────────────────────────────────────────────────┘
+
+  Conservative (High Security):
+    τ = 0.35, patch = inoculated+start, multi-layer = ON
+    Use when: Security is paramount, false positives acceptable
+
+  Balanced (Recommended):
+    τ = 0.50, patch = inoculated+start, multi-layer = PARTIAL
+    Use when: Standard deployment, balance security vs UX
+
+  Permissive (Low Friction):
+    τ = 0.70, patch = standard+end, multi-layer = OFF
+    Use when: Minimizing false positives critical
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 📂 OUTPUT FILES                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+
+  experiment_1_results/
+    ├── roc_curve.png                    ← Check optimal point
+    ├── rur_tpr_tradeoff.png             ← Check dead zone
+    └── experiment_1_report.txt          ← Read: optimal τ*
+
+  experiment_2_results/
+    ├── position_bias.png                ← Compare start vs end
+    ├── effectiveness_heatmap.png        ← Best patch type
+    └── experiment_2_report.txt          ← Read: critical IM
+
+  experiment_3_results/
+    ├── sds_distribution.png             ← Check SDS spread
+    ├── energy_intent_space.png          ← Vulnerability quadrants
+    └── high_sds_vulnerabilities.csv     ← Review attack patterns
+
+  experiment_4_results/
+    ├── csr_prs_comparison.png           ← Patch resilience
+    ├── cancellation_heatmap.png         ← Weak spots
+    └── experiment_4_report.txt          ← Read: best defense
+
+  SHPDE_Gap_Analysis_Consolidated_Report.txt  ← START HERE
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 🔍 TROUBLESHOOTING                                                       │
+└──────────────────────────────────────────────────────────────────────────┘
+
+  Problem                          Solution
+  ─────────────────────────────────────────────────────────────────────────
+  Model not found                  Update MODEL_PATH in each script
+  CUDA out of memory               Set DEVICE = "cpu"
+  Import errors                    pip install <package>
+  Experiments timeout              Reduce dataset size (edit templates)
+  Results look wrong               Check model is trained properly
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 📖 DOCUMENTATION NAVIGATION                                              │
+└──────────────────────────────────────────────────────────────────────────┘
+
+  DELIVERABLES_SUMMARY.md          ← Overview of everything
+  gap_analysis_experimental_design.md  ← Mathematical framework
+  README_GAP_ANALYSIS.md           ← Detailed usage guide
+  INTERPRETATION_GUIDE.md          ← How to read results
+  shpde_config.py                  ← Production configuration
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ ✅ PRE-FLIGHT CHECKLIST                                                  │
+└──────────────────────────────────────────────────────────────────────────┘
+
+  Before running:
+    □ Model file exists at ../code/sentinel_model.pth
+    □ Dependencies installed (torch, transformers, etc.)
+    □ 5GB+ disk space available
+    □ GPU/MPS available (or CPU fallback configured)
+
+  After experiments:
+    □ All 4 reports generated
+    □ Visualizations reviewed
+    □ Optimal τ* noted
+    □ Production config created
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 🎯 DECISION FLOWCHART                                                    │
+└──────────────────────────────────────────────────────────────────────────┘
+
+  1. Run Experiment 1 → Get τ*
+     ├─ If dead zone detected → Avoid that range
+     └─ If J < 0.75 → Retrain model
+
+  2. Run Experiment 2 → Get patch config
+     ├─ If position matters → Use start injection
+     └─ If standard fails → Upgrade to inoculated
+
+  3. Run Experiment 3 → Check semantic gaps
+     ├─ If CNN miss > 50% → Enhance architecture
+     └─ If SDS > 3.0 found → Add to training data
+
+  4. Run Experiment 4 → Verify defense
+     ├─ If PRS < 0.70 → Enable multi-layer
+     └─ If CSR > 0.50 → Use system prompts
+
+  5. Configure → Deploy → Monitor → Re-evaluate quarterly
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 💡 TIPS & TRICKS                                                         │
+└──────────────────────────────────────────────────────────────────────────┘
+
+  • Start with Experiment 1 - it sets the foundation
+  • Save intermediate results - experiments take time
+  • Customize datasets with your real data for best results
+  • Monitor production metrics to validate experimental findings
+  • Re-run quarterly to catch evolving attack patterns
+
+┌──────────────────────────────────────────────────────────────────────────┐
+│ 🚀 READY TO START                                                        │
+└──────────────────────────────────────────────────────────────────────────┘
+
+  $ python run_gap_analysis.py --all
+
+  Expected runtime: 60-120 minutes (all experiments)
+  Expected output: 4 reports + visualizations + consolidated findings
+
+  Good luck! 🎉
+
+╚══════════════════════════════════════════════════════════════════════════╝

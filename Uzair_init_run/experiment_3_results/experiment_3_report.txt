@@ -1,0 +1,40 @@
+
+================================================================================
+EXPERIMENT 3: SEMANTIC DRIFT GAPS - LOW-ENERGY/HIGH-INTENT ANALYSIS
+================================================================================
+
+1. DETECTION PERFORMANCE BY PROMPT TYPE
+                        prediction  prob_malicious       sds
+type                                                        
+low_energy_high_intent         1.0        0.999716  0.006107
+pure_benign                    0.0        0.019044  0.002064
+standard_malicious             1.0        0.999715  0.000249
+
+2. SEMANTIC DRIFT SCORE ANALYSIS
+   - High-SDS threshold: 3.0
+   - Prompts with SDS > 3.0: 0
+   - Average SDS for low-energy attacks: 0.0061
+   - Average SDS for standard malicious: 0.0002
+
+3. DETECTION GAPS IDENTIFIED
+   - CNN miss rate on low-energy attacks: 0.00%
+   - Prompts detected by attention but missed by CNN: 0
+   - Critical vulnerability count (SDS > 3.0): 0
+
+4. LAYER-WISE CONTRIBUTION
+   - CNN Energy Variance: 27.6378
+   - Intent Score Variance: 0.9671
+   - Attention layer recovery rate: 100.00%
+
+5. KEY FINDINGS
+   - ✅ CNN performs adequately on low-energy attacks
+   - ✅ GAP 2: Attention layer recovers 100.00% of CNN misses
+   - ✅ No critical vulnerabilities detected
+
+6. RECOMMENDATIONS
+   - Enhance CNN with contextual filters for polite/academic framing
+   - Increase attention weight in final ensemble decision
+   - Add semantic relationship detector for indirect malicious intent
+   - Implement SDS-based secondary screening for prompts with SDS > 2.0
+
+================================================================================
